@@ -1,0 +1,5 @@
+/* Small custom CSS on top of Bootstrap */
+body { background: #f8f9fa; }
+.card-img-top { height: 180px; object-fit: cover; }
+.card[draggable="true"] { cursor: grab; }
+#dropZone { border: 2px dashed #6c757d; background: #fff; }

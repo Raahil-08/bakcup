@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Login | Mini Store</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <nav class="navbar bg-white px-4 py-3 shadow-sm">
+        <a href="index.html" class="navbar-brand fw-bold">Mini Store</a>
+        <a href="index.html" class="btn btn-outline-dark">home</a>
+    </nav>
+
+    <div class="container py-5">
+        <div class="row g-4 justify-content-center">
+
+            <!-- SIGN UP -->
+            <div class="col-md-6 col-lg-5">
+                <div class="card shadow-lg border-0 rounded-4 p-4">
+                    <h2>sign up</h2>
+                    <form id="signupForm">
+                        <div class="mb-3"><label class="form-label">full name</label>
+                            <input type="text" id="name" class="form-control" required></div>
+                        <div class="mb-3"><label class="form-label">email</label>
+                            <input type="email" id="email" class="form-control" required></div>
+                        <div class="mb-3"><label class="form-label">phone number</label>
+                            <input type="tel" id="phone" class="form-control" required></div>
+                        <div class="mb-3"><label class="form-label">password</label>
+                            <input type="password" id="password" class="form-control" required></div>
+                        <div class="mb-3"><label class="form-label">confirm password</label>
+                            <input type="password" id="confirmPassword" class="form-control" required></div>
+                        <div class="form-check mb-3">
+                            <input type="checkbox" id="terms" class="form-check-input" required>
+                            <label for="terms" class="form-check-label">I agree to terms and conditions</label>
+                        </div>
+                        <button type="submit" class="btn btn-dark w-100">create account</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- LOGIN -->
+            <div class="col-md-6 col-lg-5">
+                <div class="card shadow-lg border-0 rounded-4 p-4">
+                    <h2>login</h2>
+                    <form id="loginForm">
+                        <div class="mb-3"><label class="form-label">email</label>
+                            <input type="email" id="loginEmail" class="form-control" required></div>
+                        <div class="mb-3"><label class="form-label">password</label>
+                            <input type="password" id="loginPassword" class="form-control" required></div>
+                        <button type="submit" class="btn btn-dark w-100">login</button>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script src="login.js"></script>
+</body>
+</html>

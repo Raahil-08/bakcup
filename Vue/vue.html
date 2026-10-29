@@ -1,0 +1,792 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Practical 7 - Vue.js Custom Directives</title>
+
+    <!-- Vue 3 is loaded from the official CDN for this standalone practical. -->
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+
+    <style>
+      :root {
+        color-scheme: light;
+        font-family: Arial, sans-serif;
+        color: #1f2937;
+        background: #f3f6fb;
+      }
+
+      body {
+        margin: 0;
+      }
+
+      .container {
+        width: min(100% - 2rem, 960px);
+        margin: 0 auto;
+      }
+
+      header {
+        padding: 2rem 0;
+        color: white;
+        background: #1d4ed8;
+      }
+
+      header h1,
+      header p {
+        margin: 0;
+      }
+
+      header p {
+        margin-top: 0.5rem;
+        color: #dbeafe;
+      }
+
+      main {
+        padding: 2rem 0 3rem;
+      }
+
+      .instructions,
+      .trip-list,
+      .empty-state {
+        padding: 1.25rem;
+        border: 1px solid #dbe3ef;
+        border-radius: 0.75rem;
+        background: white;
+        box-shadow: 0 0.25rem 1rem rgb(15 23 42 / 8%);
+      }
+
+      .instructions {
+        margin-bottom: 1.5rem;
+      }
+
+      .instructions h2,
+      .trip-list h2 {
+        margin-top: 0;
+      }
+
+      .instructions li + li {
+        margin-top: 0.5rem;
+      }
+
+      .trip-list-header {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+      }
+
+      .trip-list-header h2 {
+        margin-bottom: 0;
+      }
+
+      .trip-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 1rem;
+        margin-top: 1rem;
+      }
+
+      .trip-card {
+        padding: 1rem;
+        border: 1px solid #dbe3ef;
+        border-radius: 0.65rem;
+        background: #f8fafc;
+      }
+
+      .trip-card h3 {
+        margin: 0 0 0.75rem;
+        color: #1e3a8a;
+      }
+
+      .trip-card p {
+        margin: 0.5rem 0;
+      }
+
+      .upcoming-trip {
+        border-color: #f59e0b;
+        background: #fffbeb;
+      }
+
+      .badge {
+        display: inline-block;
+        padding: 0.2rem 0.5rem;
+        border-radius: 999px;
+        font-size: 0.8rem;
+        font-weight: bold;
+        color: #92400e;
+        background: #fde68a;
+      }
+
+      button {
+        padding: 0.6rem 0.85rem;
+        border: 0;
+        border-radius: 0.4rem;
+        font: inherit;
+        color: white;
+        background: #2563eb;
+        cursor: pointer;
+      }
+
+      button:hover {
+        background: #1d4ed8;
+      }
+
+      button:focus-visible,
+      [v-uppercase]:focus-visible {
+        outline: 3px solid #93c5fd;
+        outline-offset: 3px;
+      }
+
+      .city {
+        cursor: pointer;
+      }
+
+      .help-text {
+        margin: 0.5rem 0 0;
+        color: #64748b;
+        font-size: 0.9rem;
+      }
+
+      .exam-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+      }
+
+      .exam-card {
+        padding: 1.25rem;
+        border: 1px solid #dbe3ef;
+        border-radius: 0.75rem;
+        background: white;
+        box-shadow: 0 0.25rem 1rem rgb(15 23 42 / 8%);
+      }
+
+      .exam-card h2 {
+        margin-top: 0;
+        color: #1e3a8a;
+        font-size: 1.15rem;
+      }
+
+      .form-row {
+        display: grid;
+        gap: 0.35rem;
+        margin-bottom: 0.8rem;
+      }
+
+      input,
+      select {
+        box-sizing: border-box;
+        width: 100%;
+        padding: 0.55rem;
+        border: 1px solid #cbd5e1;
+        border-radius: 0.35rem;
+        font: inherit;
+      }
+
+      .checkbox-row {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin: 0.75rem 0;
+      }
+
+      .checkbox-row input {
+        width: auto;
+      }
+
+      .button-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+      }
+
+      .button-secondary {
+        color: #1e3a8a;
+        background: #dbeafe;
+      }
+
+      .button-danger {
+        color: #991b1b;
+        background: #fee2e2;
+      }
+
+      .button-secondary:hover {
+        background: #bfdbfe;
+      }
+
+      .button-danger:hover {
+        background: #fecaca;
+      }
+
+      .summary {
+        margin: 0.75rem 0 0;
+        padding: 0.75rem;
+        border-left: 4px solid #2563eb;
+        background: #eff6ff;
+      }
+
+      .completed {
+        opacity: 0.65;
+        text-decoration: line-through;
+      }
+
+      .error {
+        color: #b91c1c;
+        font-size: 0.9rem;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="app">
+      <header>
+        <div class="container">
+          <h1>TripMate: Vue.js Custom Directives</h1>
+          <p>Practical 7 - Creating and using custom directives in an HTML page</p>
+        </div>
+      </header>
+
+      <main class="container">
+        <section class="instructions" aria-labelledby="instructions-title">
+          <h2 id="instructions-title">What this practical demonstrates</h2>
+          <ol>
+            <li>
+              Click a city name using <code>v-uppercase</code> to transform its
+              text to uppercase.
+            </li>
+            <li>
+              Render a dynamic list with <code>v-for</code> and highlight
+              upcoming trips with <code>v-highlight</code>.
+            </li>
+            <li>
+              Display ISO dates as readable dates with
+              <code>v-format-date</code>.
+            </li>
+            <li>
+              Common Vue basics: interpolation, <code>v-bind</code>,
+              <code>v-model</code>, <code>v-if</code>, <code>v-show</code>,
+              <code>v-for</code>, computed properties, methods, and components.
+            </li>
+          </ol>
+        </section>
+
+        <section class="exam-grid" aria-label="Basic Vue examples">
+          <article class="exam-card">
+            <h2>1. Interpolation and event handling</h2>
+            <!-- {{ }} is Vue text interpolation and @click is shorthand for v-on:click. -->
+            <p>Hello, {{ studentName }}!</p>
+            <p class="summary">Button clicked {{ clickCount }} times.</p>
+            <div class="button-row">
+              <button type="button" @click="incrementClickCount">
+                Click me
+              </button>
+              <button
+                type="button"
+                class="button-secondary"
+                @click="resetClickCount"
+              >
+                Reset
+              </button>
+            </div>
+          </article>
+
+          <article class="exam-card">
+            <h2>2. Two-way binding with v-model</h2>
+            <!-- v-model keeps the input and the Vue data property synchronized. -->
+            <div class="form-row">
+              <label for="student-name">Your name</label>
+              <input id="student-name" v-model.trim="studentName" />
+            </div>
+            <div class="form-row">
+              <label for="trip-filter">Filter trips</label>
+              <input
+                id="trip-filter"
+                v-model.trim="searchText"
+                placeholder="Search by city or traveler"
+              />
+            </div>
+            <p v-show="searchText" class="help-text">
+              Searching for: <strong>{{ searchText }}</strong>
+            </p>
+          </article>
+
+          <article class="exam-card">
+            <h2>3. v-bind and conditional rendering</h2>
+            <!-- :class and :disabled are shorthand for v-bind:class and v-bind:disabled. -->
+            <p :class="{ completed: demoCompleted }">
+              This text demonstrates dynamic class binding.
+            </p>
+            <label class="checkbox-row">
+              <input type="checkbox" v-model="demoCompleted" />
+              Mark example as complete
+            </label>
+            <p v-if="demoCompleted" class="summary">Completed successfully.</p>
+            <p v-else class="help-text">Complete the checkbox to see v-if.</p>
+            <button type="button" :disabled="!demoCompleted">
+              Enabled after completion
+            </button>
+          </article>
+        </section>
+
+        <section class="exam-card" aria-labelledby="add-trip-title">
+          <h2 id="add-trip-title">Add a trip using a form</h2>
+          <!-- @submit.prevent stops the browser reload and calls the Vue method. -->
+          <form @submit.prevent="addCustomTrip">
+            <div class="exam-grid">
+              <div class="form-row">
+                <label for="new-city">City</label>
+                <input id="new-city" v-model.trim="newTrip.city" required />
+              </div>
+              <div class="form-row">
+                <label for="new-traveler">Traveler</label>
+                <input
+                  id="new-traveler"
+                  v-model.trim="newTrip.traveler"
+                  required
+                />
+              </div>
+              <div class="form-row">
+                <label for="new-date">Start date</label>
+                <input
+                  id="new-date"
+                  v-model="newTrip.startDate"
+                  type="date"
+                  required
+                />
+              </div>
+              <div class="form-row">
+                <label for="trip-type">Trip type</label>
+                <select id="trip-type" v-model="newTrip.type">
+                  <option>Leisure</option>
+                  <option>Business</option>
+                  <option>Adventure</option>
+                </select>
+              </div>
+            </div>
+            <label class="checkbox-row">
+              <input type="checkbox" v-model="newTrip.upcoming" />
+              Mark as upcoming
+            </label>
+            <p v-if="formError" class="error">{{ formError }}</p>
+            <button type="submit">Add Trip</button>
+          </form>
+        </section>
+
+        <section class="trip-list" aria-labelledby="trips-title">
+          <div class="trip-list-header">
+            <h2 id="trips-title">
+              My Trips ({{ filteredTrips.length }} of {{ trips.length }})
+            </h2>
+            <button type="button" @click="addTrip">
+              Add Sample Trip
+            </button>
+          </div>
+          <p class="help-text">
+            Click any city name to apply the uppercase directive.
+          </p>
+
+          <div v-if="filteredTrips.length > 0" class="trip-grid">
+            <!-- v-for creates one card for every item in the reactive trips array. -->
+            <article
+              v-for="trip in filteredTrips"
+              :key="trip.id"
+              v-highlight="trip.upcoming"
+              class="trip-card"
+            >
+              <h3
+                v-uppercase
+                class="city"
+                tabindex="0"
+                role="button"
+                :aria-label="`Convert ${trip.city} to uppercase`"
+              >
+                {{ trip.city }}
+              </h3>
+              <p><strong>Traveler:</strong> {{ trip.traveler }}</p>
+              <p><strong>Type:</strong> {{ trip.type }}</p>
+              <p>
+                <strong>Start date:</strong>
+                <time :datetime="trip.startDate" v-format-date="trip.startDate">
+                  {{ trip.startDate }}
+                </time>
+              </p>
+              <p v-if="trip.upcoming">
+                <span class="badge">Upcoming trip</span>
+              </p>
+              <div class="button-row">
+                <button
+                  type="button"
+                  class="button-secondary"
+                  @click="toggleUpcoming(trip)"
+                >
+                  {{ trip.upcoming ? "Mark completed" : "Mark upcoming" }}
+                </button>
+                <button
+                  type="button"
+                  class="button-danger"
+                  @click="removeTrip(trip.id)"
+                >
+                  Delete
+                </button>
+              </div>
+            </article>
+          </div>
+
+          <p v-else class="empty-state">
+            No trips match "{{ searchText || "your filter" }}".
+          </p>
+        </section>
+
+        <!-- This component demonstrates reusable component registration and props. -->
+        <trip-summary :total="trips.length" :upcoming="upcomingCount"></trip-summary>
+      </main>
+    </div>
+
+    <script>
+      const { createApp } = Vue;
+
+      /*
+       * Convert the text content of an element to uppercase when it is clicked.
+       * The directive is registered locally on this Vue application, so it is
+       * available only inside the #app element.
+       */
+      const uppercaseDirective = {
+        mounted(element) {
+          const transformToUppercase = () => {
+            element.textContent = element.textContent.toUpperCase();
+          };
+          const handleKeydown = (event) => {
+            if (event.key === "Enter" || event.key === " ") {
+              event.preventDefault();
+              transformToUppercase();
+            }
+          };
+
+          element.addEventListener("click", transformToUppercase);
+          element.addEventListener("keydown", handleKeydown);
+
+          // Store the handler so it can be removed when Vue unmounts the node.
+          element._uppercaseHandlers = {
+            click: transformToUppercase,
+            keydown: handleKeydown
+          };
+        },
+        unmounted(element) {
+          element.removeEventListener(
+            "click",
+            element._uppercaseHandlers.click
+          );
+          element.removeEventListener(
+            "keydown",
+            element._uppercaseHandlers.keydown
+          );
+          element._uppercaseHandlers = null;
+        }
+      };
+
+      /*
+       * Add a visual highlight to an element when its binding value is true.
+       * Usage: v-highlight="trip.upcoming"
+       */
+      const highlightDirective = {
+        mounted(element, binding) {
+          element.classList.toggle("upcoming-trip", Boolean(binding.value));
+        },
+        updated(element, binding) {
+          element.classList.toggle("upcoming-trip", Boolean(binding.value));
+        }
+      };
+
+      /*
+       * Format an ISO date such as 2026-08-14 as "14 Aug 2026".
+       * The text is refreshed in updated() if the bound date changes.
+       */
+      const formatDate = (element, value) => {
+        const date = new Date(`${value}T00:00:00`);
+
+        if (Number.isNaN(date.getTime())) {
+          element.textContent = "Invalid date";
+          return;
+        }
+
+        element.textContent = new Intl.DateTimeFormat("en-GB", {
+          day: "2-digit",
+          month: "short",
+          year: "numeric"
+        }).format(date);
+      };
+
+      const formatDateDirective = {
+        mounted(element, binding) {
+          formatDate(element, binding.value);
+        },
+        updated(element, binding) {
+          formatDate(element, binding.value);
+        }
+      };
+
+      /*
+       * A small reusable component. Props pass read-only values from the parent
+       * application into the component.
+       */
+      const tripSummary = {
+        props: {
+          total: {
+            type: Number,
+            required: true
+          },
+          upcoming: {
+            type: Number,
+            required: true
+          }
+        },
+        template: `
+          <section class="exam-card" aria-label="Trip summary">
+            <h2>Reusable Component</h2>
+            <p>This component receives data through props.</p>
+            <p class="summary">
+              Total trips: <strong>{{ total }}</strong> |
+              Upcoming trips: <strong>{{ upcoming }}</strong>
+            </p>
+          </section>
+        `
+      };
+
+      const app = createApp({
+        data() {
+          return {
+            nextTripId: 4,
+            studentName: "Raahil",
+            clickCount: 0,
+            searchText: "",
+            demoCompleted: false,
+            formError: "",
+            newTrip: {
+              city: "",
+              traveler: "",
+              startDate: "",
+              type: "Leisure",
+              upcoming: true
+            },
+            trips: [
+              {
+                id: 1,
+                city: "Goa",
+                traveler: "Raahil",
+                startDate: "2026-08-14",
+                type: "Leisure",
+                upcoming: true
+              },
+              {
+                id: 2,
+                city: "Manali",
+                traveler: "Aarav",
+                startDate: "2026-12-20",
+                type: "Adventure",
+                upcoming: true
+              },
+              {
+                id: 3,
+                city: "Jaipur",
+                traveler: "Meera",
+                startDate: "2025-11-05",
+                type: "Business",
+                upcoming: false
+              }
+            ]
+          };
+        },
+        computed: {
+          /*
+           * Computed properties are cached until their reactive dependencies
+           * change. This is preferable to filtering the list in the template.
+           */
+          filteredTrips() {
+            const query = this.searchText.toLowerCase();
+
+            if (!query) {
+              return this.trips;
+            }
+
+            return this.trips.filter((trip) =>
+              `${trip.city} ${trip.traveler}`.toLowerCase().includes(query)
+            );
+          },
+          upcomingCount() {
+            return this.trips.filter((trip) => trip.upcoming).length;
+          }
+        },
+        methods: {
+          incrementClickCount() {
+            this.clickCount += 1;
+          },
+          resetClickCount() {
+            this.clickCount = 0;
+          },
+          // Demonstrates that the v-for list updates automatically when data changes.
+          addTrip() {
+            this.trips.push({
+              id: this.nextTripId,
+              city: "Kerala",
+              traveler: "New traveler",
+              startDate: "2027-01-15",
+              type: "Leisure",
+              upcoming: true
+            });
+            this.nextTripId += 1;
+          },
+          addCustomTrip() {
+            this.formError = "";
+
+            if (
+              !this.newTrip.city ||
+              !this.newTrip.traveler ||
+              !this.newTrip.startDate
+            ) {
+              this.formError = "Please complete all required fields.";
+              return;
+            }
+
+            this.trips.push({
+              id: this.nextTripId,
+              ...this.newTrip
+            });
+            this.nextTripId += 1;
+            this.newTrip = {
+              city: "",
+              traveler: "",
+              startDate: "",
+              type: "Leisure",
+              upcoming: true
+            };
+          },
+          toggleUpcoming(trip) {
+            trip.upcoming = !trip.upcoming;
+          },
+          removeTrip(id) {
+            this.trips = this.trips.filter((trip) => trip.id !== id);
+          }
+        }
+      });
+
+      // Register the reusable component before mounting the Vue application.
+      app.component("trip-summary", tripSummary);
+
+      // Register the three custom directives before mounting the Vue application.
+      app.directive("uppercase", uppercaseDirective);
+      app.directive("highlight", highlightDirective);
+      app.directive("format-date", formatDateDirective);
+      app.mount("#app");
+
+      /*
+       * =====================================================================
+       * THEORY NOTES: VUE.JS AND CUSTOM DIRECTIVES
+       * =====================================================================
+       *
+       * 1. What is Vue.js?
+       *    Vue.js is a progressive JavaScript framework for building reactive
+       *    user interfaces. It connects a JavaScript data model to HTML and
+       *    automatically updates the DOM when reactive data changes.
+       *
+       * 2. Creating a Vue application
+       *    const app = Vue.createApp({ ... });
+       *    app.mount("#app");
+       *    createApp() creates the application instance and mount() attaches it
+       *    to the element whose id is "app". Vue controls that element and its
+       *    child elements.
+       *
+       * 3. Vue application options used in this practical
+       *    - data(): returns reactive state such as trips and form values.
+       *    - methods: contains functions called by events such as @click.
+       *    - computed: contains cached values derived from reactive data.
+       *    - components: defines reusable pieces of the user interface.
+       *
+       * 4. What is a directive?
+       *    A directive is a special Vue attribute beginning with "v-". It
+       *    applies reactive behavior to a DOM element.
+       *
+       *    Examples of built-in directives:
+       *    - v-if / v-else: conditionally creates or removes an element.
+       *    - v-show: toggles an element's CSS display property.
+       *    - v-for: repeats an element for every item in an array.
+       *    - v-bind or ":" binds an HTML attribute to Vue data.
+       *    - v-on or "@" listens for browser events.
+       *    - v-model: creates two-way data binding for form controls.
+       *
+       * 5. What is a custom directive?
+       *    A custom directive is application-specific behavior written by the
+       *    developer. It is useful when direct DOM manipulation is required.
+       *
+       *    General registration syntax:
+       *    app.directive("directive-name", {
+       *      mounted(element, binding) {
+       *        // Add behavior after the element is inserted in the DOM.
+       *      },
+       *      updated(element, binding) {
+       *        // Refresh behavior when the bound value changes.
+       *      },
+       *      unmounted(element) {
+       *        // Remove event listeners or other resources.
+       *      }
+       *    });
+       *
+       *    Usage in HTML:
+       *    <p v-directive-name="value">Content</p>
+       *
+       * 6. Custom directives implemented here
+       *    - v-uppercase:
+       *      Adds click and keyboard handlers and changes the element text to
+       *      uppercase. The unmounted hook removes those handlers.
+       *    - v-highlight:
+       *      Reads binding.value. When it is true, the upcoming-trip CSS class
+       *      is added; when false, the class is removed.
+       *    - v-format-date:
+       *      Reads an ISO date from binding.value and writes a human-readable
+       *      date such as "14 Aug 2026" into the element.
+       *
+       * 7. Directive binding object
+       *    In v-highlight="trip.upcoming", binding.value contains the current
+       *    value of trip.upcoming. Other useful fields include binding.name,
+       *    binding.oldValue, binding.arg, and binding.modifiers.
+       *
+       * 8. Directive lifecycle hooks
+       *    - mounted: called after the directive's element is inserted.
+       *    - updated: called after Vue updates the component or bound value.
+       *    - unmounted: called before the element is removed.
+       *    Lifecycle cleanup is important for preventing duplicate listeners
+       *    and memory leaks.
+       *
+       * 9. Reactivity and v-for
+       *    Vue tracks the trips array because it is returned from data().
+       *    push(), property updates, and array replacement are detected by Vue.
+       *    v-for should use a unique :key so Vue can efficiently identify each
+       *    item when the list changes.
+       *
+       * 10. Computed properties versus methods
+       *    A computed property such as filteredTrips is cached until one of its
+       *    dependencies changes. It is suitable for filtering or summarizing
+       *    data. A method runs every time it is called and is suitable for
+       *    actions such as addCustomTrip() or removeTrip().
+       *
+       * 11. v-model and event modifiers
+       *    v-model synchronizes form controls with JavaScript data. The .trim
+       *    modifier removes extra whitespace. The .prevent modifier on
+       *    @submit.prevent prevents the browser's default page reload.
+       *
+       * 12. Components and props
+       *    A component is a reusable UI unit. The trip-summary component
+       *    receives total and upcoming values through read-only props:
+       *    <trip-summary :total="trips.length" :upcoming="upcomingCount">
+       *
+       * 13. Short viva answer
+       *    Custom directives are used for low-level DOM behavior that is not
+       *    naturally expressed as component data or a computed property. In
+       *    this practical, directives transform text, apply conditional
+       *    styling, and format dates while Vue manages the reactive data.
+       * =====================================================================
+       */
+    </script>
+  </body>
+</html>

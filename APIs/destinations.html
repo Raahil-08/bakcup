@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TripMate - Destinations Gallery</title>
+    <style>
+      :root {
+        font-family: Arial, Helvetica, sans-serif;
+        color: #1f2937;
+      }
+
+      body {
+        margin: 0;
+        background: linear-gradient(180deg, #f8fbff, #eef5fb);
+      }
+
+      .page {
+        width: 100%;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 24px;
+        box-sizing: border-box;
+      }
+
+      .hero {
+        background: white;
+        border-radius: 22px;
+        padding: 28px;
+        box-shadow: 0 18px 40px rgba(15, 23, 42, 0.1);
+        overflow: hidden;
+      }
+
+      .eyebrow {
+        display: inline-block;
+        padding: 8px 14px;
+        border-radius: 999px;
+        background: #dbeafe;
+        color: #1d4ed8;
+        font-size: 0.95rem;
+        margin-bottom: 16px;
+      }
+
+      h1 {
+        font-size: 6vw;
+        line-height: 1.05;
+        margin: 0;
+      }
+
+      .lead {
+        font-size: 1.05rem;
+        max-width: 60ch;
+        color: #4b5563;
+      }
+
+      .feature-image {
+        width: 100%;
+        max-width: 100%;
+        display: block;
+        border-radius: 18px;
+        margin-top: 20px;
+        aspect-ratio: 16 / 7;
+        object-fit: cover;
+      }
+
+      .gallery {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 18px;
+        margin-top: 24px;
+      }
+
+      .card {
+        background: white;
+        border-radius: 18px;
+        overflow: hidden;
+        box-shadow: 0 14px 28px rgba(15, 23, 42, 0.08);
+      }
+
+      .card img {
+        width: 100%;
+        height: 180px;
+        object-fit: cover;
+        display: block;
+      }
+
+      .card .body {
+        padding: 16px;
+      }
+
+      .card h2 {
+        margin: 0 0 8px;
+        font-size: 1.1rem;
+      }
+
+      .card p {
+        margin: 0;
+        color: #4b5563;
+        font-size: 0.95rem;
+      }
+
+      @media (max-width: 1100px) {
+        .gallery {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+
+      @media (max-width: 700px) {
+        h1 {
+          font-size: 10vw;
+        }
+
+        .lead {
+          font-size: 1rem;
+        }
+
+        .gallery {
+          grid-template-columns: 1fr;
+        }
+
+        .feature-image {
+          aspect-ratio: 4 / 3;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="page">
+      <section class="hero">
+        <span class="eyebrow">TripMate Destinations</span>
+        <h1>Explore the World with TripMate</h1>
+        <p class="lead">
+          Plan destinations, compare attractions, and browse trip ideas with a
+          responsive layout that adapts from mobile to desktop.
+        </p>
+
+        <picture>
+          <source
+            media="(max-width: 700px)"
+            srcset="
+              https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=900&q=80
+            "
+          />
+          <img
+            class="feature-image"
+            src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1600&q=80"
+            alt="TripMate destination hero"
+          />
+        </picture>
+      </section>
+
+      <section class="gallery">
+        <article class="card">
+          <img
+            src="https://images.unsplash.com/photo-1500375592092-40eb2168fd21?auto=format&fit=crop&w=900&q=80"
+            alt="Goa"
+          />
+          <div class="body">
+            <h2>Goa</h2>
+            <p>Beach escapes, forts, nightlife, and water activities.</p>
+          </div>
+        </article>
+
+        <article class="card">
+          <img
+            src="https://images.unsplash.com/photo-1477587458883-47145ed94245?auto=format&fit=crop&w=900&q=80"
+            alt="Manali"
+          />
+          <div class="body">
+            <h2>Manali</h2>
+            <p>Snow views, mountain adventures, and scenic day trips.</p>
+          </div>
+        </article>
+
+        <article class="card">
+          <img
+            src="https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?auto=format&fit=crop&w=900&q=80"
+            alt="Jaipur"
+          />
+          <div class="body">
+            <h2>Jaipur</h2>
+            <p>Heritage palaces, local markets, and cultural landmarks.</p>
+          </div>
+        </article>
+
+        <article class="card">
+          <img
+            src="https://images.unsplash.com/photo-1548013146-72479768bada?auto=format&fit=crop&w=900&q=80"
+            alt="Kerala"
+          />
+          <div class="body">
+            <h2>Kerala</h2>
+            <p>Backwaters, greenery, and slow travel experiences.</p>
+          </div>
+        </article>
+      </section>
+    </main>
+  </body>
+</html>

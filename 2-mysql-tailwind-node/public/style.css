@@ -1,0 +1,2 @@
+/* Small custom CSS on top of Tailwind (most styling is utility classes in the HTML) */
+.card[draggable="true"] { cursor: grab; }
